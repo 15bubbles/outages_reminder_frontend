@@ -1,9 +1,10 @@
 import "./App.css";
-
+import { useEffect, useState } from "react";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import { OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
+import { getOutages } from "./client";
 
 const testOutages = [
   {
@@ -55,7 +56,35 @@ const testOutages = [
 ];
 
 function App() {
-  const outages: OutageItem[] = [...testOutages];
+  const [outages, setOutages] = useState<OutageItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fromDate = new Date();
+    const toDate = new Date(fromDate.setDate(fromDate.getDate() + 5));
+
+    const fetchOutages = async () => {
+      setIsLoading(true);
+
+      try {
+        const outages = await getOutages({
+          cityId: 118969,
+          streetId: 118969,
+          houseNo: "2b",
+          fromDate,
+          toDate,
+        });
+        setOutages(outages);
+      } catch (err: any) {
+        setError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOutages();
+  }, []);
 
   return (
     <ChakraProvider>
