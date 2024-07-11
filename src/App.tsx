@@ -5,38 +5,52 @@ import { OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
 import { fetchOutages } from "./client";
+import { useSearchParams } from "react-router-dom";
 
 function App() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [outages, setOutages] = useState<OutageItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const url = "http://127.0.0.1:8000/outages";
-    const from = new Date();
-    const to = new Date(new Date().setDate(from.getDate() + 5));
 
     const getOutages = async () => {
       setIsLoading(true);
 
-      try {
-        const outages = await fetchOutages(url, {
-          city: "warszawa",
-          street: "wysokomazowiecka",
-          houseNo: "-1",
-          from,
-          to,
-        });
-        setOutages(outages);
-      } catch (err: any) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
+      const today = new Date();
+      const city = searchParams.get("city");
+      const street = searchParams.get("street");
+      const houseNo = searchParams.get("houseNo");
+      let from = searchParams.get("from") || today;
+      let to =
+        searchParams.get("to") ||
+        new Date(new Date().setDate(today.getDate() + 5));
+
+      if (city && street && houseNo && from && to) {
+        try {
+          const outages = await fetchOutages(url, {
+            city,
+            street,
+            houseNo,
+            from: new Date(from),
+            to: new Date(to),
+          });
+          setOutages(outages);
+        } catch (err: any) {
+          // TODO: error handling, show some toast with error details
+          setError(err);
+        } finally {
+          setIsLoading(false);
+        }
       }
+
+      // TODO: else redirect to / and show search form
     };
 
     getOutages();
-  }, []);
+  }, [searchParams]);
 
   const renderOutages = () => {
     return outages.length > 0 ? (
