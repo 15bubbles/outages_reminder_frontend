@@ -1,51 +1,35 @@
 import axios from "axios";
-import {
-  OutageItem,
-  OutagesResponse,
-  CitiesItem,
-  StreetsItem,
-} from "./interfaces";
+import { OutageItem, CitiesItem, StreetsItem } from "./interfaces";
 
-const OUTAGES_API_URL = "https://www.tauron-dystrybucja.pl/waapi/outages";
 const GEO_API_URL = "https://www.tauron-dystrybucja.pl/waapi/enum/geo";
-
-const outagesApiClient = axios.create({
-  baseURL: OUTAGES_API_URL,
-});
 
 const geoApiClient = axios.create({
   baseURL: GEO_API_URL,
 });
 
-interface GetOutagesParams {
-  cityId: number;
-  streetId: number;
+interface FetchOutagesParams {
+  city: string;
+  street: string;
   houseNo: string;
-  fromDate: Date;
-  toDate: Date;
+  from: Date;
+  to: Date;
 }
 
-export const getOutages = async ({
-  cityId,
-  streetId,
-  houseNo,
-  fromDate,
-  toDate,
-}: GetOutagesParams): Promise<OutageItem[]> => {
-  const { data } = await outagesApiClient.get<OutagesResponse>("address", {
+export const fetchOutages = async (
+  url: string,
+  { city, street, houseNo, from, to }: FetchOutagesParams
+): Promise<OutageItem[]> => {
+  const { data } = await axios.get<OutageItem[]>(url, {
     params: {
-      cityGAID: cityId,
-      streetGAID: streetId,
-      houseNo: houseNo,
-      fromDate: fromDate.toISOString(),
-      toDate: toDate.toISOString(),
-      getLightingSupport: true,
-      getServicedSwitchingoff: true,
-      _: fromDate.getTime(), // timestamp of a request, we're sending it to impersonate web client
+      city,
+      street,
+      houseNo,
+      from,
+      to,
     },
   });
 
-  return data["OutageItems"];
+  return data;
 };
 
 export const findCity = async (name: string): Promise<CitiesItem[]> => {

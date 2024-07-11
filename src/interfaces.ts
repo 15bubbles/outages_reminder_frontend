@@ -4,24 +4,10 @@ export enum OutageType {
 }
 
 export interface OutageItem {
-  OutageId: string;
-  Modified: string;
-  StartDate: string;
-  EndDate: string;
-  IdsWWW: number[];
-  AddressPointIds: any[];
-  Message: string;
-  TypeId: number;
-  IsActive: boolean;
-}
-
-export interface OutagesResponse {
-  OutageListType: number;
-  AddressPoint: any;
-  IdsWWW: number[];
-  AddressLightingSupport: any;
-  ServicedSwitchingoff: boolean | null;
-  OutageItems: OutageItem[];
+  startDate: string;
+  endDate: string;
+  message: string;
+  type: OutageType;
 }
 
 export interface CitiesItem {
