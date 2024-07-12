@@ -5,7 +5,45 @@ import { OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
 import { fetchOutages } from "./client";
-import { useSearchParams } from "react-router-dom";
+import { SetURLSearchParams, useSearchParams } from "react-router-dom";
+
+const LOCAL_STORAGE_KEY = "outages.location";
+
+interface Location {
+  city: string;
+  street: string;
+  houseNo: string;
+}
+
+const saveLocationToLocalStorage = (location: Location): void => {
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(location));
+};
+
+const readLocationFromLocalStorage = (): Location | null => {
+  const value = localStorage.getItem(LOCAL_STORAGE_KEY);
+  return value ? JSON.parse(value) : null;
+};
+
+// NOTE: could be a hook that uses `useSearchParams` hook underneath
+//  instead of passing `URLSearchParams` argument
+const readLocationFromSearchParams = (
+  searchParams: URLSearchParams
+): Location | null => {
+  const city = searchParams.get("city") || localStorage.getItem("outages.city");
+  const street = searchParams.get("street");
+  const houseNo = searchParams.get("houseNo");
+
+  return city && street && houseNo ? { city, street, houseNo } : null;
+};
+
+// NOTE: could be a hook that uses `useSearchParams` hook underneath
+//  instead of passing `setSearchParams` setter
+const setLocationToSearchParams = (
+  { city, street, houseNo }: Location,
+  setSearchParams: SetURLSearchParams
+) => {
+  setSearchParams({ city, street, houseNo });
+};
 
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,24 +58,25 @@ function App() {
       setIsLoading(true);
 
       const today = new Date();
-      const city = searchParams.get("city");
-      const street = searchParams.get("street");
-      const houseNo = searchParams.get("houseNo");
-      let from = searchParams.get("from") || today;
-      let to =
+      const location =
+        readLocationFromSearchParams(searchParams) ||
+        readLocationFromLocalStorage();
+      const from = new Date(searchParams.get("from") || today);
+      const to = new Date(
         searchParams.get("to") ||
-        new Date(new Date().setDate(today.getDate() + 5));
+          new Date(new Date().setDate(today.getDate() + 5))
+      );
 
-      if (city && street && houseNo && from && to) {
+      if (location) {
         try {
           const outages = await fetchOutages(url, {
-            city,
-            street,
-            houseNo,
-            from: new Date(from),
-            to: new Date(to),
+            ...location,
+            from,
+            to,
           });
           setOutages(outages);
+          saveLocationToLocalStorage(location);
+          setLocationToSearchParams(location, setSearchParams);
         } catch (err: any) {
           // TODO: error handling, show some toast with error details
           setError(err);
