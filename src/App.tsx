@@ -1,11 +1,12 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import { Box, ChakraProvider, Spinner } from "@chakra-ui/react";
+import { Box, ChakraProvider, Spinner, useDisclosure } from "@chakra-ui/react";
 import { OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
 import { fetchOutages } from "./client";
 import { SetURLSearchParams, useSearchParams } from "react-router-dom";
+import { SearchLocationModal } from "./SearchLocationModal";
 
 const LOCAL_STORAGE_KEY = "outages.location";
 
@@ -50,6 +51,8 @@ function App() {
   const [outages, setOutages] = useState<OutageItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { isOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const url = "http://127.0.0.1:8000/outages";
@@ -110,6 +113,11 @@ function App() {
   return (
     <ChakraProvider>
       <Box>
+        <SearchLocationModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onSubmit={() => console.log("submit")}
+        />
         {isLoading ? (
           <Box
             display="flex"
