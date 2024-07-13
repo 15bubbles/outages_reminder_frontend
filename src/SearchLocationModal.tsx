@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   Modal,
@@ -21,7 +22,6 @@ interface SearchLocationModalProps {
   onSubmit: (location: Location) => void;
 }
 
-// TODO: validation (at least required and so on - I think I'll need some react-hook-form for that?)
 export const SearchLocationModal = ({
   isOpen,
   onClose,
@@ -32,25 +32,62 @@ export const SearchLocationModal = ({
     street: "",
     houseNo: "",
   });
+  const [formErrors, setFormErrors] = useState<Location>({
+    city: "",
+    street: "",
+    houseNo: "",
+  });
+
+  const hasErrors = (): boolean => {
+    const errors = { city: "", street: "", houseNo: "" };
+    let hasErrors = false;
+
+    if (formData.city === "") {
+      errors.city = "Proszę podać miasto";
+      hasErrors = true;
+    }
+
+    if (formData.street === "") {
+      errors.street = "Proszę podać ulicę";
+      hasErrors = true;
+    }
+
+    if (formData.houseNo === "") {
+      errors.houseNo = "Proszę podać numer domu";
+      hasErrors = true;
+    }
+
+    setFormErrors({ ...formErrors, ...errors });
+    return hasErrors;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleOnSubmit = () => {
+    if (hasErrors()) {
+      return;
+    }
+
     onSubmit(formData);
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Wyszukaj lokalizację</ModalHeader>
         <ModalCloseButton />
 
         <ModalBody>
-          <FormControl id="city" mb={4}>
+          <FormControl
+            id="city"
+            mb={4}
+            isInvalid={formErrors.city !== ""}
+            isRequired
+          >
             <FormLabel>Miasto</FormLabel>
             <Input
               type="text"
@@ -58,9 +95,15 @@ export const SearchLocationModal = ({
               value={formData.city}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{formErrors.city}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="street" mb={4}>
+          <FormControl
+            id="street"
+            mb={4}
+            isInvalid={formErrors.street !== ""}
+            isRequired
+          >
             <FormLabel>Ulica</FormLabel>
             <Input
               type="text"
@@ -68,9 +111,15 @@ export const SearchLocationModal = ({
               value={formData.street}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{formErrors.street}</FormErrorMessage>
           </FormControl>
 
-          <FormControl id="houseNo" mb={4}>
+          <FormControl
+            id="houseNo"
+            mb={4}
+            isInvalid={formErrors.houseNo !== ""}
+            isRequired
+          >
             <FormLabel>Numer domu</FormLabel>
             <Input
               type="text"
@@ -78,6 +127,7 @@ export const SearchLocationModal = ({
               value={formData.houseNo}
               onChange={handleInputChange}
             />
+            <FormErrorMessage>{formErrors.houseNo}</FormErrorMessage>
           </FormControl>
         </ModalBody>
 
