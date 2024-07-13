@@ -1,12 +1,19 @@
-import "./App.css";
 import { useEffect, useState } from "react";
-import { Box, ChakraProvider, Spinner, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  ChakraProvider,
+  IconButton,
+  Spinner,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Location, OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
 import { fetchOutages } from "./client";
 import { SetURLSearchParams, useSearchParams } from "react-router-dom";
 import { SearchLocationModal } from "./SearchLocationModal";
+import { Nav } from "./Nav";
+import { FaSearch } from "react-icons/fa";
 
 const LOCAL_STORAGE_KEY = "outages.location";
 
@@ -46,7 +53,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { isOpen, onClose } = useDisclosure();
+  // TODO: use `defaultIsOpen` to display modal on starting page if nothing in localStorage
+  //  nor searchParams
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   useEffect(() => {
     const url = "http://127.0.0.1:8000/outages";
@@ -110,7 +119,14 @@ function App() {
 
   return (
     <ChakraProvider>
-      <Box>
+      <Nav m="0 auto" px="2rem" w="100%">
+        <IconButton
+          aria-label="Search location"
+          icon={<FaSearch />}
+          onClick={onOpen}
+        />
+      </Nav>
+      <Box max-width="1280px" m="0 auto" p="2rem">
         <SearchLocationModal
           isOpen={isOpen}
           onClose={onClose}

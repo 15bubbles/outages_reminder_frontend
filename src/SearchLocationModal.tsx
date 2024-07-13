@@ -21,6 +21,7 @@ interface SearchLocationModalProps {
   onSubmit: (location: Location) => void;
 }
 
+// TODO: validation (at least required and so on - I think I'll need some react-hook-form for that?)
 export const SearchLocationModal = ({
   isOpen,
   onClose,
@@ -38,6 +39,7 @@ export const SearchLocationModal = ({
 
   const handleOnSubmit = () => {
     onSubmit(formData);
+    onClose();
   };
 
   return (

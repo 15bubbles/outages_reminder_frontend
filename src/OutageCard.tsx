@@ -1,5 +1,3 @@
-import "./App.css";
-
 import { Badge, Box, Icon, Stack, Text } from "@chakra-ui/react";
 import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 
