@@ -3,6 +3,11 @@ export enum OutageType {
   Incident = 2,
 }
 
+export interface Location {
+  city: string;
+  street: string;
+  houseNo: string;
+}
 export interface OutageItem {
   startDate: string;
   endDate: string;

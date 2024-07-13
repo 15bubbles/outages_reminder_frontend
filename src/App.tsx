@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Box, ChakraProvider, Spinner, useDisclosure } from "@chakra-ui/react";
-import { OutageItem, OutageType } from "./interfaces";
+import { Location, OutageItem, OutageType } from "./interfaces";
 import { NoOutages } from "./NoOutages";
 import { OutageCard } from "./OutageCard";
 import { fetchOutages } from "./client";
@@ -9,12 +9,6 @@ import { SetURLSearchParams, useSearchParams } from "react-router-dom";
 import { SearchLocationModal } from "./SearchLocationModal";
 
 const LOCAL_STORAGE_KEY = "outages.location";
-
-interface Location {
-  city: string;
-  street: string;
-  houseNo: string;
-}
 
 const saveLocationToLocalStorage = (location: Location): void => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(location));
@@ -94,6 +88,10 @@ function App() {
     getOutages();
   }, [searchParams]);
 
+  const handleOnSubmit = ({ city, street, houseNo }: Location) => {
+    setSearchParams({ city, street, houseNo });
+  };
+
   const renderOutages = () => {
     return outages.length > 0 ? (
       outages.map(({ startDate, endDate, message, type }, idx) => (
@@ -116,7 +114,7 @@ function App() {
         <SearchLocationModal
           isOpen={isOpen}
           onClose={onClose}
-          onSubmit={() => console.log("submit")}
+          onSubmit={handleOnSubmit}
         />
         {isLoading ? (
           <Box

@@ -13,12 +13,12 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
+import { Location } from "./interfaces";
 
 interface SearchLocationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // TODO: use Location interface here
-  onSubmit: (location: object) => void;
+  onSubmit: (location: Location) => void;
 }
 
 export const SearchLocationModal = ({
@@ -26,8 +26,7 @@ export const SearchLocationModal = ({
   onClose,
   onSubmit,
 }: SearchLocationModalProps) => {
-  // TODO: use Location interface here
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Location>({
     city: "",
     street: "",
     houseNo: "",
@@ -35,6 +34,10 @@ export const SearchLocationModal = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleOnSubmit = () => {
+    onSubmit(formData);
   };
 
   return (
@@ -80,7 +83,7 @@ export const SearchLocationModal = ({
           <Button variant="ghost" mr={3} onClick={onClose}>
             Anuluj
           </Button>
-          <Button colorScheme="blue" onClick={onSubmit}>
+          <Button colorScheme="blue" onClick={handleOnSubmit}>
             Sprawdź
           </Button>
         </ModalFooter>
