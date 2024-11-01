@@ -15,6 +15,7 @@ import { SearchLocationModal } from "./SearchLocationModal";
 import { Nav } from "./Nav";
 import { FaSearch } from "react-icons/fa";
 import { useWebPushNotifications } from "./hooks";
+import { SubscribeButton } from "./SubscribeButton";
 
 const LOCAL_STORAGE_KEY = "outages.location";
 
@@ -120,6 +121,30 @@ function App() {
     );
   };
 
+  const renderLoading = () => {
+    return (
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        position="fixed"
+        top="0"
+        left="0"
+        width="100vw"
+        height="100vh"
+        zIndex="9999"
+      >
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Box>
+    );
+  };
+
   return (
     <ChakraProvider>
       <Nav m="0 auto" px="2rem" w="100%">
@@ -135,29 +160,8 @@ function App() {
           onClose={onClose}
           onSubmit={handleOnSubmit}
         />
-        {isLoading ? (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            position="fixed"
-            top="0"
-            left="0"
-            width="100vw"
-            height="100vh"
-            zIndex="9999"
-          >
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
-          </Box>
-        ) : (
-          renderOutages()
-        )}
+        {isLoading ? renderLoading() : renderOutages()}
+        <SubscribeButton position="fixed" bottom="6" right="6" />
       </Box>
     </ChakraProvider>
   );
