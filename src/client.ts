@@ -57,3 +57,10 @@ export const findStreet = async (
 
   return data;
 };
+
+export const subscribeWebPushNotifications = async (
+  url: string,
+  subscriptionBody: any
+): Promise<void> => {
+  await axios.post(url, subscriptionBody);
+};

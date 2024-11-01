@@ -14,6 +14,7 @@ import { SetURLSearchParams, useSearchParams } from "react-router-dom";
 import { SearchLocationModal } from "./SearchLocationModal";
 import { Nav } from "./Nav";
 import { FaSearch } from "react-icons/fa";
+import { useWebPushNotifications } from "./hooks";
 
 const LOCAL_STORAGE_KEY = "outages.location";
 
@@ -96,6 +97,8 @@ function App() {
 
     getOutages();
   }, [searchParams]);
+
+  useWebPushNotifications();
 
   const handleOnSubmit = ({ city, street, houseNo }: Location) => {
     setSearchParams({ city, street, houseNo });
